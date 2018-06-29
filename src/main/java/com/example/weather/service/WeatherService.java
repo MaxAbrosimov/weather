@@ -3,6 +3,7 @@ package com.example.weather.service;
 import com.example.weather.converters.WeatherConverter;
 import com.example.weather.dto.WeatherResponseDto;
 import com.example.weather.service.api.WeatherApiService;
+import com.example.weather.validators.DateValidator;
 import org.apache.http.HttpException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +28,11 @@ public class WeatherService {
     }
 
     public WeatherResponseDto getWeatherByCity(String cityName, Date date) throws IOException, JSONException, URISyntaxException, HttpException, ParseException {
-        JSONObject myResponse = weatherApiService.getWeatherByCity(cityName, date, "metric");
-        return weatherConverter.convert(myResponse, date);
+        Date onDate = date == null ? new Date() : date;
+        DateValidator.validate(onDate);
+        // TODO receive "metric" by user IP or etc, not hardcoded
+        JSONObject myResponse = weatherApiService.getWeatherByCity(cityName, "metric");
+        return weatherConverter.convert(myResponse, onDate);
     }
 
 }

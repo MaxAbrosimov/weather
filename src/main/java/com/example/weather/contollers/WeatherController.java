@@ -1,7 +1,7 @@
 package com.example.weather.contollers;
 
-import com.example.weather.dto.WeatherDto;
-import com.example.weather.dto.WeatherResponseDto;
+import com.example.weather.exceptions.DataNotFoundException;
+import com.example.weather.exceptions.IllegalDateException;
 import com.example.weather.service.WeatherService;
 import org.apache.http.HttpException;
 import org.json.JSONException;
@@ -20,6 +20,8 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Date;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.EXPECTATION_FAILED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -34,14 +36,19 @@ public class WeatherController {
         this.weatherService = weatherService;
     }
 
-
-    @GetMapping(value = "/city/{cityName}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{cityName}", produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(OK)
-    public ResponseEntity<WeatherResponseDto> greeting(
+    public ResponseEntity<Object> getWeatherByCity(
             @PathVariable String cityName,
-            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd' 'HH:mm:ss") Date date
+            @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd--HH:mm:ss") Date date
     ) throws IOException, JSONException, URISyntaxException, HttpException, ParseException {
-        return new ResponseEntity<>(weatherService.getWeatherByCity(cityName, date), OK);
+        try {
+            return new ResponseEntity<>(weatherService.getWeatherByCity(cityName, date), OK);
+        } catch (DataNotFoundException e) {
+            return new ResponseEntity<>(e, BAD_REQUEST);
+        } catch (IllegalDateException e) {
+            return new ResponseEntity<>(e, EXPECTATION_FAILED);
+        }
     }
 
 }

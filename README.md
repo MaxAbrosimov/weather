@@ -1,4 +1,4 @@
-###Simple JAVA forecast API by city and date
+### Simple JAVA forecast API by city and date
 using free openweathermap api
 
 ## Requirements
@@ -16,6 +16,6 @@ using free openweathermap api
 **Step 5** enjoy :)
 
 ## Test example:
-http://localhost:{port}/weather/city/kiev?date=2018-06-29 14:45:00
+http://localhost:{port}/weather/kiev?date={yyyy-MM-dd--HH:mm:ss}
 
 

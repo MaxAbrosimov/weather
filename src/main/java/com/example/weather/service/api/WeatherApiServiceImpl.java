@@ -1,6 +1,6 @@
 package com.example.weather.service.api;
 
-import org.apache.http.HttpException;
+import com.example.weather.exceptions.DataNotFoundException;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
-import java.util.Date;
 
 @Service
 public class WeatherApiServiceImpl implements WeatherApiService{
@@ -28,7 +27,7 @@ public class WeatherApiServiceImpl implements WeatherApiService{
     String weatherApiKey;
 
     @Override
-    public JSONObject getWeatherByCity(String cityName, Date date, String metric) throws URISyntaxException, IOException, JSONException, HttpException {
+    public JSONObject getWeatherByCity(String cityName, String metric) throws IOException, JSONException, URISyntaxException {
 
         URIBuilder uriBuilder = new URIBuilder()
                 .setScheme("https");
@@ -41,9 +40,13 @@ public class WeatherApiServiceImpl implements WeatherApiService{
                 .addParameter("q", cityName);
         HttpURLConnection con = (HttpURLConnection) uriBuilder.build().toURL().openConnection();
         con.setRequestMethod("GET");
+        return convertResponse(con);
+
+    }
+
+    private JSONObject convertResponse(HttpURLConnection con) throws IOException, JSONException {
         try {
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuilder response = new StringBuilder();
             while ((inputLine = in.readLine()) != null) {
@@ -52,9 +55,8 @@ public class WeatherApiServiceImpl implements WeatherApiService{
             in.close();
             return new JSONObject(response.toString());
         } catch (FileNotFoundException e) {
-            throw new HttpException("City`s not found");
+            throw new DataNotFoundException("Nothing found, please check data correctness");
         }
-
     }
 
 

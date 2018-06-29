@@ -6,10 +6,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Date;
 
 public interface WeatherApiService {
 
-    JSONObject getWeatherByCity(String cityName, Date date, String metric) throws URISyntaxException, IOException, JSONException, HttpException;
+    JSONObject getWeatherByCity(String cityName, String metric) throws URISyntaxException, IOException, JSONException, HttpException;
 
 }
